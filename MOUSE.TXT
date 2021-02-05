@@ -1,0 +1,270 @@
+Date:    19950406
+From:    Teemu Hakala
+To:      Multiple recipients of list <mc68hc11@bobcat.etsu.edu>
+Subject: Mouse specs needed
+
+>>>>> Tom Dickens writes:
+Tom> I think I saw a reference a couple of weeks ago on this
+Tom> listserver about the protocol specifications for a PC mouse.
+Tom> I have a student who is wanting to use an HC11 to appear to a
+Tom> PC as a mouse (he is building a handicap PC interface for a
+Tom> senior project).  Any references would be most helpful.  If
+Tom> this item didn't appear here, then never mind:^)
+
+ I have the file, I'll just have to browse a bit. The interface is
+very simple between the two. Out of interest: what does the user do
+instead of moving a mouse? Joystick or some speech/motion detector?
+
+
+Tom> Thanks...  ...Tom Dickens
+
+ No sweat, just wait a bit 'til I find it. See, it is a bit messy
+here.  Hmm, not here... Yes, here it is, <*cough*> a bit dusty, but it
+should do... It jumped off the 'hc11 list a while ago.
+
+---8<---8<---8<---8<---8<---8<---8<---8<---8<---8<---8<---8<---8<---
+
+
+
+Date of release: 24 Oct 1993       Release 9
+
+This is a summary on serial communication using the TTY protocol. It
+contains information on the TTY protocol and hardware and software implemen-
+tations for IBM PCs which has been derived from National Semiconductor data
+sheets and practical experience of the author and his supporters. Starting
+with release 5, some information on modems has been added.
+
+If you want to contribute to this file in any way, please email me (probably
+just reply to this posting). My email address is: chbl@stud.uni-sb.de or
+chris@phil15.uni-sb.de.
+
+See the end for details.
+
+It's the nineth publication of this file. Some errors have been corrected,
+and some information has been added (which has surely brought other errors
+with it, see Murphy's Law).
+
+[] brackets often indicate comments to sneaked material; copied lines are
+indented. I've made great efforts to always mention who's to be credited.
+
+This compilation of information is (C) Copyright 1993 by Christian Blum; all
+rights reserved. This file is not to be reproduced commercially, not even
+partially, without written permission. You are allowed to use it in any
+other way you like. I don't want any (monetary) profit being drawn out of it
+(neither by me nor by others!! I don't mind if you have a look or two at it
+at work though... :-). Please feel free to provide this file to others for
+free or at your own expenses.
+
+
+
+[snip]
+
+
+The Microsoft mouse uses 1200 bps, 7n1, the Mouse Systems mouse uses 1200
+bps, 8n1. See the Mouse chapter for details.
+
+
+[snip again]
+
+
+Mouses (mice?)
+------
+
+The Microsoft Serial Mouse (or compatibles) is the device that is most often
+used with the Serial Port of the PC; it's the one with the two buttons. Mouse
+Systems compatible mouses have three buttons. Here's some information I
+received from Stephen Warner and Angelo Haritsis:
+
+Pins Used:
+
+  TxD, RTS, DTR are used as power sources for the mouse.
+  RxD is used to receive data from the mouse.
+
+Mouse reset:
+  Put UART to 'broken line' state (set bit 6 of the LCR) and clear the bits
+  0-1 of the MCR; wait a while and reverse the bits again.
+
+Serial Data Parameters:
+
+  Microsoft Mouse        1200 bps, 7 data bits, 1 stop bit, no parity
+  Mouse Systems Mouse    1200 bps, 8 data bits, 1 stop bit, no parity
+
+Data packet format of the Microsoft mouse:
+
+  The data packet consists of 3 bytes. It is sent to the computer every time
+  the mouse changes state (ie. the mouse moves or the buttons are released/
+  pressed)
+
+              D6    D5    D4    D3    D2    D1    D0
+
+  1st byte    1     LB    RB    Y7    Y6    X7    X6
+  2nd byte    0     X5    X4    X3    X2    X1    X0
+  3rd byte    0     Y5    Y4    Y3    Y2    Y1    Y0
+
+  The byte marked with 1 is sent first and then the others. The bit D6 in the
+  first byte is used for synchronizing the software to the mouse packets
+  if it goes out of sync.
+
+  LB is the state of the left  button (1 being the LB is pressed)
+  RB is the state of the right button (1 being the RB is pressed)
+  X0-7 movement of the mouse in the X direction since last packet (+ right)
+  Y0-7 movement of the mouse in the Y direction since last packet (+ down )
+
+Data packet format of the Mouse Systems mouse:
+
+  The data packet consists of 5 bytes.
+
+              D7    D6    D5    D4    D3    D2    D1    D0
+
+  1st byte    1     0     0     0     0     LB    MB    RB
+  2nd byte    X7    X6    X5    X4    X3    X2    X1    X0
+  3rd byte    Y7    Y6    Y5    Y4    Y3    Y2    Y1    Y0
+  4th byte    equal to 2nd byte
+  5th byte    equal to 3rd byte
+
+  Bits 7-3 of the 1st byte are used for synchronisation; it's rather
+  improbable that they appear the same way in any of the other bytes.
+
+  LB is the state of the left button (1 being the LB is pressed)
+  MB is the state of the middle button (1 being the MB is pressed)
+  RB is the state of the right button (1 being the RB is pressed)
+  X0-7 movement of the mouse in the X direction since last packet (+ right)
+  Y0-7 movement of the mouse in the Y direction since last packet (+ up   )
+
+The mouse should rather be used with the mouse driver software; this
+ensures compatibility to future changes and greatly reduces software
+overhead. See Ralf Brown's interrupt list, interrupt 33h.
+
+
+
+Date:         19931122
+From:         Phil Brady
+Organization: Computer Centre, Swansea University, UK
+Newsgroups:   sci.electronics
+Subject:      Re: Output from a mouse
+
+Soo Wei Meng asks:
+>I'm trying to incorporate a serial PC mouse in a robot project of mine to`
+>determine location, distance travelled, etc...
+
+>Does anyone know the serial output of a mouse?  I took apart my Logitech
+>and saw that there was a chip on board which does some decoding on the
+>output of the optical sensors.  Anyone know what the chip does and what
+>the specs are?
+
+>I don't really want to look at the optical outputs since it will tie up
+>four inputs on the board.
+
+I posed this question about 6 months ago and had a very helpful reply
+from Dmitry Stefankov which I reproduce below.
+Regards
+Phil Brady
+
+
+Form: Wizard
+ Dmitry Stefankov
+
+1.  PC Mouse Systems
+Serial UART: 1200 baud, data=8,start=1,parity=none
+Mouse Protocol of Transmission
+        bit:    7  6  5  4  3  2  1  0
+byte 1  (sync)  1  0  0  0  0  L  M  R      (0=depressed button)
+byte 2  (dX)    x7 x6 x5 x4 x3 x2 x1 x0     (bit 7 -> 0=pos,1=neg)
+byte 3  (dY)    y7 y6 y5 y4 y3 y2 y1 y0
+byte 4  (dX')   x7 x6 x5 x4 x3 x2 x1 x0
+byte 5  (dY')   y7 y6 y5 y4 y3 y2 y1 y0
+Notes:  - all bytes are two's complement binary
+        - dX, dY  = relative moves after last transmission
+        - dX',dY' = relative moves since dX, dY were transmitted
+2.  Microsoft Mouse
+Serial UART: 1200 baud, data=7,stop=1,parity=none
+Mouse Protocol of Transmission (normal mode)
+        bit:    7  6  5  4  3  2  1  0
+byte 1  (sync)  0  1  L  R  y7 y6 x7 x6    (1=depressed button)
+byte 2  (dX)    0  0 x5 x4 x3 x2 x1 x0     (MSB-> 0=pos,1=neg)
+byte 3  (dY)    0  0 y5 y4 y3 y2 y1 y0
+Notes:  - all moves bytes are two's complement binary
+          (you must collect all bits together)
+
+
+Date:    19990131
+From:    Mario Becroft
+To:      Chipdir-L@fatcity.com
+Subject: Re: keyboard and mouse
+
+On Sat, 30 Jan 1999, docydoc wrote:
+> I'm lloking for the Microsoft mouse protocoll plus which is used for
+> inst. for Logitech's trackman
+> marble whichs supports 3 mousebuttons. i already tried to find out
+> something, but failed...
+
+There are two common protocols used in serial mice, one being Microsoft
+and the other Mouse Systems. There is also a new extended Microsoft
+protocol that includes support for extra buttons and the rotating wheel
+found on many newer mice.
+
+The mice work at 1200 BPS and send an information packet after each change
+(such as a mouse movement or button press or release). Microsoft mouse
+packets consist of 3 bytes (or 4 in the extended protocol) and Mouse
+Systems uses 5 bytes.
+
+I was able to find the relevant information on the WWW, but if you don't
+have any luck I could write it down for you. If I do this I will post it
+on my WWW site so everyone can benefit from it.
+
+> I do not even have a clou whatever is send from the device.
+> Does anybody know where the diff between PS2 and serial isß Logitech
+> ships at least the trackman
+> with an adapor which is only a "plug-converter" Does PS2 has only TTL
+> levels?
+
+I haven't looked into PS/2 mice, however I believe they use a synchronous
+serial communications scheme. I understand they are software-wise the same
+as a serial mouse.
+
+> The second thing is where can I find any, and I mean any, info on the
+> protocoll of "normal PC keyboards"?
+> I want to build my own hardware to connect one to my amiga and vice
+> versa. For that I need to know the Pinout
+> and data direction which is bidirectional AFAIK.
+
+The AT keyboard uses a synchronous serial communications protocol. I
+believe PS/2 keyboards are electrically identical, only with a different
+plug. I found the AT keyboard interface a real hassle to implement. It
+seems fairly simple, but it was very hard to get right (I did get it right
+in the end). Then again I may have been approaching it from the wrong
+angle or just had some bad luck.
+
+The AT keyboard is much more intelligent than the serial mouse. The
+keyboard sends codes on every key make or break. It also supports
+automatically generating key repeats when a key is held down, among other
+things. The AT keyboard has several scan codes set. The default one seems
+really stupid, with some keys having scancodes consisting of whole
+sequences of bytes. It is a real pain to implement. It is much better to
+use a different scancode set which has a simple single byte for each key.
+
+I was able to find all the information I needed by searching on the WWW,
+however it was quite an effort, and some information was inaccurate or
+incomplete which made matters worse. I had to discover the scancodes of
+some of the keys by myself since they weren't listed anywhere.
+
+I have obtained some considerable experience with both serial mice and AT
+keyboards, and I can probably help with anything you need to know. BTW I
+notice you mention you are planning on making an AT keyboard interface for
+the Amiga. I presume you are doing the same with the mouse. You may be
+interested to know that I have already made a serial mouse interface for
+the Atari and Amiga (and an AT keyboard interface for the Atari but not
+Amiga). You can refer to my WWW site at http://www.pl.net/~mario/ for more
+information.
+
+If you are interested please email me and I'll get together some
+WWW site references that contain useful information on these subjects, and
+if you have any particular questions don't hesitate to ask.
+
+-- 
++-----------------------------------------------------------------------+
+| Mario Becroft                * Tariland, New Zealand Atari User Group |
+|                              * Atari Hardware Developments            |
+| http://www.pl.net/~mario/    * Atari Serial Mouse Interface           |
++-----------------------------------------------------------------------+
+
